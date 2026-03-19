@@ -595,21 +595,31 @@ async function analyseMessage(){
   btn.disabled=true;result.classList.add('show');
   inner.innerHTML=`<div class="ai-loading"><span class="dot-pulse">● </span>${T[lang.current].aiLoading}</div>`;
   try{
-    const ln=lang.current==='ta'?'Tamil':lang.current==='hi'?'Hindi':'English';
-    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:`You are a cybercrime expert helping Indian victims. Analyse this and respond ONLY in valid JSON, no markdown.
-
-Message: "${input}"
-
-JSON: {"risk_level":"HIGH or MEDIUM or LOW","risk_percent":0-100,"verdict":"one sentence in ${ln}","flags":["flag1 in ${ln}","flag2","flag3"],"immediate_action":"one clear action in ${ln}"}
-
-HIGH(70-100):threats/blackmail/fake authority/prize/OTP requests. MEDIUM(30-69):suspicious. LOW:legitimate.`}]})});
-    const data=await r.json();
-    const txt=data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
-    const p=JSON.parse(txt.replace(/```json|```/g,'').trim());
+    const r=await fetch('/api/analyse',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:input, language:lang.current})
+    });
+    if(!r.ok) throw new Error('API error '+r.status);
+    const p=await r.json();
+    if(p.error) throw new Error(p.error);
     const col=p.risk_level==='HIGH'?'#e05a5a':p.risk_level==='MEDIUM'?'#e8a020':'#4caf76';
     const ico=p.risk_level==='HIGH'?'🚨':p.risk_level==='MEDIUM'?'⚠️':'✅';
-    inner.innerHTML=`<div style="margin-bottom:12px"><div class="risk-label">${ico} ${p.risk_level} RISK</div><div class="risk-sub">${p.verdict}</div><div class="risk-bar-wrap"><div class="risk-bar" style="width:${p.risk_percent}%;background:${col}"></div></div><div style="font-size:12px;color:#666;text-align:right">${p.risk_percent}% risk score</div></div><div class="risk-flags">${p.flags.map(f=>`<div class="risk-flag-item">› ${f}</div>`).join('')}</div><div style="margin-top:14px;background:#1f1a0f;border:1px solid #3a2a10;border-radius:12px;padding:12px"><div style="font-size:12px;color:#e8a020;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px">What to do now</div><div style="font-size:14px;color:#ccc;line-height:1.65">${p.immediate_action}</div></div>`;
-  }catch(e){inner.innerHTML=`<div style="font-size:14px;color:#e05a5a;padding:10px">Could not analyse right now. Please call 1930 directly for help.</div>`;}
+    inner.innerHTML=`
+      <div style="margin-bottom:12px">
+        <div class="risk-label">${ico} ${p.risk_level} RISK</div>
+        <div class="risk-sub">${p.verdict}</div>
+        <div class="risk-bar-wrap"><div class="risk-bar" style="width:${p.risk_percent}%;background:${col}"></div></div>
+        <div style="font-size:12px;color:#666;text-align:right">${p.risk_percent}% risk score</div>
+      </div>
+      <div class="risk-flags">${p.flags.map(f=>`<div class="risk-flag-item">› ${f}</div>`).join('')}</div>
+      <div style="margin-top:14px;background:#1f1a0f;border:1px solid #3a2a10;border-radius:12px;padding:12px">
+        <div style="font-size:12px;color:#e8a020;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px">What to do now</div>
+        <div style="font-size:14px;color:#ccc;line-height:1.65">${p.immediate_action}</div>
+      </div>`;
+  }catch(e){
+    inner.innerHTML=`<div style="font-size:14px;color:#e05a5a;padding:10px">Could not analyse right now. Please call <strong style="color:#f0ece3">1930</strong> directly for help.</div>`;
+  }
   btn.disabled=false;
 }
 
