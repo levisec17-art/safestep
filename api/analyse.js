@@ -11,50 +11,58 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'No message provided' });
   }
 
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'API not configured' });
 
   const langName = language === 'ta' ? 'Tamil' : language === 'hi' ? 'Hindi' : 'English';
 
-  const prompt = `You are a cybercrime detection expert helping Indian victims. Analyse this message and respond ONLY in valid JSON, no markdown fences, no text outside JSON.
+  try {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        temperature: 0.1,
+        max_tokens: 500,
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a cybercrime detection expert helping Indian victims. Always respond ONLY in valid JSON with no markdown, no explanation outside JSON.'
+          },
+          {
+            role: 'user',
+            content: `Analyse this message and respond ONLY in valid JSON.
 
 Message: "${message.substring(0, 1000)}"
 
-Respond in this exact JSON format:
+JSON format:
 {
   "risk_level": "HIGH or MEDIUM or LOW",
-  "risk_percent": number between 0 and 100,
-  "verdict": "one sentence verdict in ${langName}",
+  "risk_percent": number 0-100,
+  "verdict": "one sentence in ${langName}",
   "flags": ["flag1 in ${langName}", "flag2 in ${langName}", "flag3 in ${langName}"],
-  "immediate_action": "one clear action to take right now in ${langName}"
+  "immediate_action": "one clear action in ${langName}"
 }
 
-Risk rules:
-HIGH (70-100): threats, blackmail, fake police/CBI/TRAI calls, prize/lottery claims, OTP requests, urgent money demands
-MEDIUM (30-69): suspicious links, unusual offers, unverified claims
-LOW (0-29): appears legitimate`;
-
-  try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.1, maxOutputTokens: 500 }
-        })
-      }
-    );
+HIGH (70-100): threats, blackmail, fake police/CBI/TRAI, prize claims, OTP requests, urgent money demands
+MEDIUM (30-69): suspicious links, unusual offers
+LOW (0-29): appears legitimate`
+          }
+        ]
+      })
+    });
 
     if (!response.ok) {
       const err = await response.text();
-      console.error('Gemini API error:', err);
+      console.error('Groq API error:', err);
       return res.status(500).json({ error: 'Analysis failed' });
     }
 
     const data = await response.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const text = data.choices?.[0]?.message?.content || '';
     const cleaned = text.replace(/```json|```/g, '').trim();
     const parsed = JSON.parse(cleaned);
     return res.status(200).json(parsed);
