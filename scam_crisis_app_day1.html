@@ -1,0 +1,650 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=Noto+Sans+Tamil:wght@400;500&family=Noto+Sans+Devanagari:wght@400;500&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .app {
+    font-family: 'Sora', sans-serif;
+    background: #0f0f0f;
+    min-height: 100vh;
+    color: #f0ece3;
+    padding: 0;
+  }
+
+  .screen { display: none; flex-direction: column; min-height: 100vh; }
+  .screen.active { display: flex; }
+
+  /* LANG PICKER */
+  .lang-screen {
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: #0f0f0f;
+  }
+  .lang-logo {
+    width: 56px; height: 56px;
+    background: #e8a020;
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    margin-bottom: 2rem;
+  }
+  .lang-title {
+    font-size: 22px; font-weight: 600;
+    color: #f0ece3;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  .lang-sub {
+    font-size: 14px; color: #888;
+    text-align: center;
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+  }
+  .lang-btn {
+    width: 100%; max-width: 320px;
+    padding: 16px 20px;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    background: #1a1a1a;
+    color: #f0ece3;
+    cursor: pointer;
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 14px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .lang-btn:hover { border-color: #e8a020; background: #1f1a0f; }
+  .lang-flag { font-size: 24px; }
+  .lang-name { font-size: 16px; font-weight: 500; }
+  .lang-native { font-size: 13px; color: #888; margin-top: 2px; }
+
+  /* HOME SCREEN */
+  .home-screen { padding: 0; background: #0f0f0f; }
+  .home-header {
+    padding: 1.5rem 1.25rem 1rem;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid #1e1e1e;
+  }
+  .header-logo { display: flex; align-items: center; gap: 10px; }
+  .logo-dot { width: 10px; height: 10px; border-radius: 50%; background: #e8a020; }
+  .logo-text { font-size: 15px; font-weight: 600; color: #f0ece3; letter-spacing: -0.3px; }
+  .lang-switch {
+    font-size: 12px; color: #888;
+    background: #1a1a1a; border: 1px solid #2a2a2a;
+    padding: 6px 10px; border-radius: 8px; cursor: pointer;
+  }
+
+  .home-hero {
+    padding: 2rem 1.25rem 1.5rem;
+    border-bottom: 1px solid #1e1e1e;
+  }
+  .hero-tag {
+    display: inline-block;
+    background: #1f1a0f; color: #e8a020;
+    font-size: 11px; font-weight: 500;
+    padding: 4px 10px; border-radius: 20px;
+    border: 1px solid #3a2a10;
+    margin-bottom: 1rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .hero-title {
+    font-size: 26px; font-weight: 600;
+    line-height: 1.25; color: #f0ece3;
+    margin-bottom: 0.75rem;
+  }
+  .hero-title span { color: #e8a020; }
+  .hero-desc { font-size: 14px; color: #888; line-height: 1.7; }
+
+  .situation-section { padding: 1.5rem 1.25rem; }
+  .section-label {
+    font-size: 11px; color: #666;
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+
+  .situation-card {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    padding: 1rem 1.1rem;
+    margin-bottom: 10px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 14px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .situation-card:hover { border-color: #e8a020; background: #1f1a0f; }
+  .sit-icon {
+    width: 42px; height: 42px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .sit-icon.red { background: #2a1010; }
+  .sit-icon.amber { background: #1f1a0f; }
+  .sit-icon.blue { background: #101825; }
+  .sit-icon.pink { background: #1f1018; }
+  .sit-body { flex: 1; }
+  .sit-title { font-size: 14px; font-weight: 500; color: #f0ece3; margin-bottom: 3px; }
+  .sit-desc { font-size: 12px; color: #666; line-height: 1.5; }
+  .sit-arrow { color: #444; font-size: 16px; }
+
+  .emergency-bar {
+    margin: 0 1.25rem 1.5rem;
+    background: #1f1a0f;
+    border: 1px solid #3a2a10;
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .emg-icon { font-size: 22px; }
+  .emg-text { flex: 1; }
+  .emg-title { font-size: 13px; font-weight: 500; color: #e8a020; }
+  .emg-number { font-size: 11px; color: #888; margin-top: 2px; }
+  .emg-call {
+    background: #e8a020; color: #0f0f0f;
+    border: none; border-radius: 8px;
+    padding: 8px 14px; font-size: 13px; font-weight: 600;
+    cursor: pointer; font-family: 'Sora', sans-serif;
+  }
+
+  /* CRISIS SCREEN */
+  .crisis-screen { background: #0f0f0f; padding: 0; }
+  .crisis-header {
+    padding: 1.25rem;
+    display: flex; align-items: center; gap: 12px;
+    border-bottom: 1px solid #1e1e1e;
+  }
+  .back-btn {
+    width: 34px; height: 34px;
+    background: #1a1a1a; border: 1px solid #2a2a2a;
+    border-radius: 8px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: #888; font-size: 16px;
+  }
+  .crisis-title-bar { flex: 1; }
+  .crisis-type-label { font-size: 11px; color: #e8a020; text-transform: uppercase; letter-spacing: 0.5px; }
+  .crisis-title-text { font-size: 15px; font-weight: 500; color: #f0ece3; }
+
+  .step-indicator {
+    display: flex; gap: 4px;
+    padding: 1rem 1.25rem 0;
+  }
+  .step-dot {
+    height: 3px; border-radius: 2px;
+    background: #2a2a2a; flex: 1;
+    transition: background 0.3s;
+  }
+  .step-dot.done { background: #e8a020; }
+  .step-dot.active { background: #e8a020; opacity: 0.5; }
+
+  .step-content { padding: 1.5rem 1.25rem; flex: 1; }
+  .step-num { font-size: 11px; color: #666; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .step-heading { font-size: 20px; font-weight: 600; line-height: 1.3; color: #f0ece3; margin-bottom: 0.75rem; }
+  .step-heading .highlight { color: #e8a020; }
+  .step-body { font-size: 14px; color: #888; line-height: 1.75; margin-bottom: 1.5rem; }
+
+  .do-dont { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem; }
+  .do-box, .dont-box {
+    border-radius: 12px; padding: 1rem;
+    border: 1px solid;
+  }
+  .do-box { background: #101a10; border-color: #1a3a1a; }
+  .dont-box { background: #1a1010; border-color: #3a1a1a; }
+  .box-label { font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 8px; }
+  .do-box .box-label { color: #4caf76; }
+  .dont-box .box-label { color: #e05a5a; }
+  .box-item { font-size: 12px; color: #aaa; line-height: 1.6; margin-bottom: 4px; }
+
+  .action-card {
+    background: #1a1a1a; border: 1px solid #2a2a2a;
+    border-radius: 12px; padding: 1rem;
+    margin-bottom: 10px;
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .action-num {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: #e8a020; color: #0f0f0f;
+    font-size: 12px; font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .action-text { font-size: 13px; color: #ccc; line-height: 1.6; }
+  .action-text strong { color: #f0ece3; font-weight: 500; }
+
+  .crisis-footer {
+    padding: 1rem 1.25rem 1.5rem;
+    border-top: 1px solid #1e1e1e;
+  }
+  .next-btn {
+    width: 100%; padding: 15px;
+    background: #e8a020; color: #0f0f0f;
+    border: none; border-radius: 12px;
+    font-size: 15px; font-weight: 600;
+    cursor: pointer; font-family: 'Sora', sans-serif;
+    transition: opacity 0.2s;
+  }
+  .next-btn:hover { opacity: 0.9; }
+  .skip-link { text-align: center; margin-top: 10px; font-size: 12px; color: #555; cursor: pointer; }
+
+  .report-box {
+    background: #1f1a0f; border: 1px solid #3a2a10;
+    border-radius: 14px; padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .report-title { font-size: 14px; font-weight: 500; color: #e8a020; margin-bottom: 0.5rem; }
+  .report-desc { font-size: 13px; color: #888; line-height: 1.6; margin-bottom: 1rem; }
+  .report-num {
+    font-size: 28px; font-weight: 600; color: #f0ece3; letter-spacing: -1px;
+  }
+  .report-sub { font-size: 11px; color: #666; margin-top: 4px; }
+
+  .share-section { padding: 0 1.25rem 2rem; }
+  .share-label { font-size: 12px; color: #666; margin-bottom: 10px; text-align: center; }
+  .share-btn {
+    width: 100%; padding: 13px;
+    background: #1a1a1a; border: 1px solid #2a2a2a;
+    border-radius: 12px; color: #ccc;
+    font-size: 13px; font-weight: 500;
+    cursor: pointer; font-family: 'Sora', sans-serif;
+    margin-bottom: 8px;
+    transition: border-color 0.2s;
+  }
+  .share-btn:hover { border-color: #e8a020; color: #e8a020; }
+
+  .tamil { font-family: 'Noto Sans Tamil', sans-serif; }
+  .hindi { font-family: 'Noto Sans Devanagari', sans-serif; }
+</style>
+
+<div class="app" id="app">
+
+  <!-- SCREEN 0: Language -->
+  <div class="screen lang-screen active" id="screen-lang">
+    <div class="lang-logo">🛡️</div>
+    <div class="lang-title">SafeStep</div>
+    <div class="lang-sub">Free help for cybercrime victims<br>Choose your language to continue</div>
+    <button class="lang-btn" onclick="selectLang('en')">
+      <span class="lang-flag">🇮🇳</span>
+      <div><div class="lang-name">English</div><div class="lang-native">Continue in English</div></div>
+    </button>
+    <button class="lang-btn" onclick="selectLang('ta')">
+      <span class="lang-flag">🇮🇳</span>
+      <div><div class="lang-name tamil">தமிழ்</div><div class="lang-native">தமிழில் தொடரவும்</div></div>
+    </button>
+    <button class="lang-btn" onclick="selectLang('hi')">
+      <span class="lang-flag">🇮🇳</span>
+      <div><div class="lang-name hindi">हिंदी</div><div class="lang-native hindi">हिंदी में जारी रखें</div></div>
+    </button>
+  </div>
+
+  <!-- SCREEN 1: Home -->
+  <div class="screen home-screen" id="screen-home">
+    <div class="home-header">
+      <div class="header-logo">
+        <div class="logo-dot"></div>
+        <div class="logo-text">SafeStep</div>
+      </div>
+      <div class="lang-switch" onclick="goTo('screen-lang')" id="lang-label">🌐 English</div>
+    </div>
+
+    <div class="home-hero">
+      <div class="hero-tag" id="hero-tag">Free · Anonymous · Available 24/7</div>
+      <div class="hero-title" id="hero-title">Something happened.<br>We'll help you <span>right now.</span></div>
+      <div class="hero-desc" id="hero-desc">If you're being threatened, blackmailed, or scammed — you're not alone. Get a clear action plan in 60 seconds.</div>
+    </div>
+
+    <div class="situation-section">
+      <div class="section-label" id="section-label">What happened to you?</div>
+
+      <div class="situation-card" onclick="startCrisis('sextortion')">
+        <div class="sit-icon pink">📵</div>
+        <div class="sit-body">
+          <div class="sit-title" id="sit1-title">Someone has my private photo/video</div>
+          <div class="sit-desc" id="sit1-desc">Threatening to send to your contacts</div>
+        </div>
+        <div class="sit-arrow">›</div>
+      </div>
+
+      <div class="situation-card" onclick="startCrisis('investment')">
+        <div class="sit-icon amber">💸</div>
+        <div class="sit-body">
+          <div class="sit-title" id="sit2-title">I lost money in a fake investment</div>
+          <div class="sit-desc" id="sit2-desc">Fake trading app, WhatsApp group, stock tips</div>
+        </div>
+        <div class="sit-arrow">›</div>
+      </div>
+
+      <div class="situation-card" onclick="startCrisis('arrest')">
+        <div class="sit-icon blue">🚨</div>
+        <div class="sit-body">
+          <div class="sit-title" id="sit3-title">I got a call from "police/CBI/TRAI"</div>
+          <div class="sit-desc" id="sit3-desc">Threatening arrest, demanding money</div>
+        </div>
+        <div class="sit-arrow">›</div>
+      </div>
+
+      <div class="situation-card" onclick="startCrisis('upi')">
+        <div class="sit-icon red">🏦</div>
+        <div class="sit-body">
+          <div class="sit-title" id="sit4-title">Fraud UPI / bank transfer</div>
+          <div class="sit-desc" id="sit4-desc">Money deducted without my permission</div>
+        </div>
+        <div class="sit-arrow">›</div>
+      </div>
+    </div>
+
+    <div class="emergency-bar">
+      <div class="emg-icon">📞</div>
+      <div class="emg-text">
+        <div class="emg-title" id="emg-title">National Cyber Helpline</div>
+        <div class="emg-number" id="emg-sub">Call free, 24 hours, all India</div>
+      </div>
+      <button class="emg-call" onclick="alert('Calling 1930...')">1930</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: Crisis Steps -->
+  <div class="screen crisis-screen" id="screen-crisis">
+    <div class="crisis-header">
+      <div class="back-btn" onclick="goTo('screen-home')">‹</div>
+      <div class="crisis-title-bar">
+        <div class="crisis-type-label" id="crisis-label">Sextortion</div>
+        <div class="crisis-title-text" id="crisis-subtitle">Your 60-second action plan</div>
+      </div>
+    </div>
+
+    <div class="step-indicator" id="step-dots"></div>
+    <div class="step-content" id="step-content"></div>
+
+    <div class="crisis-footer">
+      <button class="next-btn" id="next-btn" onclick="nextStep()">Next step →</button>
+      <div class="skip-link" id="skip-link" onclick="skipToReport()">Skip to helpline number</div>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: Final Report Screen -->
+  <div class="screen" id="screen-report">
+    <div class="crisis-header">
+      <div class="back-btn" onclick="goTo('screen-home')">‹</div>
+      <div class="crisis-title-bar">
+        <div class="crisis-type-label" id="report-crisis-label">Done</div>
+        <div class="crisis-title-text" id="report-title-text">Report now — act fast</div>
+      </div>
+    </div>
+
+    <div class="step-content">
+      <div class="report-box">
+        <div class="report-title" id="report-box-title">Call the Cyber Helpline</div>
+        <div class="report-desc" id="report-box-desc">This is free, confidential and available 24/7 across India. The faster you call, the better the chance of recovering money or stopping spread.</div>
+        <div class="report-num">1930</div>
+        <div class="report-sub" id="report-box-sub">National Cyber Crime Helpline · Free call</div>
+      </div>
+
+      <div class="action-card">
+        <div class="action-num">1</div>
+        <div class="action-text" id="report-step1"><strong>File online complaint</strong> at cybercrime.gov.in — takes 5 minutes. Keep your complaint number safe.</div>
+      </div>
+      <div class="action-card">
+        <div class="action-num">2</div>
+        <div class="action-text" id="report-step2"><strong>Take screenshots</strong> of every threat message, call log, payment receipt before deleting anything.</div>
+      </div>
+      <div class="action-card">
+        <div class="action-num">3</div>
+        <div class="action-text" id="report-step3"><strong>Tell one trusted person</strong> — a family member or close friend. You don't have to go through this alone.</div>
+      </div>
+    </div>
+
+    <div class="share-section">
+      <div class="share-label" id="share-label">Someone else might need this right now</div>
+      <button class="share-btn" onclick="shareApp()">Share SafeStep with someone →</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const lang = { current: 'en' };
+
+const content = {
+  en: {
+    langLabel: '🌐 English',
+    heroTag: 'Free · Anonymous · Available 24/7',
+    heroTitle: 'Something happened.<br>We\'ll help you <span>right now.</span>',
+    heroDesc: 'If you\'re being threatened, blackmailed, or scammed — you\'re not alone. Get a clear action plan in 60 seconds.',
+    sectionLabel: 'What happened to you?',
+    sit1Title: 'Someone has my private photo/video',
+    sit1Desc: 'Threatening to send to your contacts',
+    sit2Title: 'I lost money in a fake investment',
+    sit2Desc: 'Fake trading app, WhatsApp group, stock tips',
+    sit3Title: 'I got a call from "police/CBI/TRAI"',
+    sit3Desc: 'Threatening arrest, demanding money',
+    sit4Title: 'Fraud UPI / bank transfer',
+    sit4Desc: 'Money deducted without my permission',
+    emgTitle: 'National Cyber Helpline',
+    emgSub: 'Call free, 24 hours, all India',
+    crisisSubtitle: 'Your 60-second action plan',
+    reportBoxTitle: 'Call the Cyber Helpline',
+    reportBoxDesc: 'Free, confidential, available 24/7. The faster you call, the better chance of stopping it.',
+    reportBoxSub: 'National Cyber Crime Helpline · Free call',
+    reportStep1: '<strong>File online complaint</strong> at cybercrime.gov.in — takes 5 minutes. Keep your complaint number safe.',
+    reportStep2: '<strong>Take screenshots</strong> of every threat, call log, payment before deleting anything.',
+    reportStep3: '<strong>Tell one trusted person</strong> — a family member or friend. You don\'t have to go through this alone.',
+    shareLabel: 'Someone else might need this right now',
+    nextBtn: 'Next step →',
+    skipLink: 'Skip to helpline number'
+  },
+  ta: {
+    langLabel: '🌐 தமிழ்',
+    heroTag: 'இலவசம் · அநாமதேய · 24/7',
+    heroTitle: 'ஏதோ நடந்தது.<br>நாங்கள் உங்களுக்கு <span>இப்போதே</span> உதவுவோம்.',
+    heroDesc: 'மிரட்டல், மிரட்டல் அல்லது மோசடி — நீங்கள் தனியாக இல்லை. 60 வினாடிகளில் தெளிவான திட்டம் பெறுங்கள்.',
+    sectionLabel: 'உங்களுக்கு என்ன நடந்தது?',
+    sit1Title: 'யாரோ என் தனிப்பட்ட படம்/வீடியோ வைத்திருக்கிறார்கள்',
+    sit1Desc: 'தொடர்புகளுக்கு அனுப்புவதாக மிரட்டுகிறார்கள்',
+    sit2Title: 'போலி முதலீட்டில் பணம் இழந்தேன்',
+    sit2Desc: 'போலி டிரேடிங் ஆப், WhatsApp குழு',
+    sit3Title: '"போலீஸ்/CBI/TRAI" என்று அழைப்பு வந்தது',
+    sit3Desc: 'கைது மிரட்டல், பணம் கேட்கிறார்கள்',
+    sit4Title: 'மோசடி UPI / வங்கி பரிமாற்றம்',
+    sit4Desc: 'என் அனுமதியின்றி பணம் போனது',
+    emgTitle: 'தேசிய சைபர் உதவி மையம்',
+    emgSub: 'இலவச அழைப்பு, 24 மணி நேரமும்',
+    crisisSubtitle: 'உங்கள் 60-வினாடி திட்டம்',
+    reportBoxTitle: 'சைபர் உதவி மையத்தை அழையுங்கள்',
+    reportBoxDesc: 'இலவசம், ரகசியம், 24/7. விரைவாக அழைத்தால் உதவி கிடைக்கும்.',
+    reportBoxSub: 'தேசிய சைபர் குற்ற உதவி மையம் · இலவச அழைப்பு',
+    reportStep1: '<strong>cybercrime.gov.in இல் புகார் பதிவு செய்யுங்கள்</strong> — 5 நிமிடங்கள் ஆகும். புகார் எண்ணை சேமிக்கவும்.',
+    reportStep2: '<strong>ஸ்கிரீன்ஷாட்கள் எடுங்கள்</strong> — அச்சுறுத்தல் செய்திகள், அழைப்பு பதிவுகள், பரிமாற்றம் அனைத்தும்.',
+    reportStep3: '<strong>ஒரு நம்பகமான நபரிடம் சொல்லுங்கள்</strong> — குடும்பத்தினர் அல்லது நண்பர். நீங்கள் தனியாக இல்லை.',
+    shareLabel: 'வேறு யாருக்காவது இப்போது தேவைப்படலாம்',
+    nextBtn: 'அடுத்த படி →',
+    skipLink: 'உதவி எண்ணுக்கு தாவு'
+  },
+  hi: {
+    langLabel: '🌐 हिंदी',
+    heroTag: 'मुफ्त · गुमनाम · 24/7 उपलब्ध',
+    heroTitle: 'कुछ हुआ है।<br>हम <span>अभी</span> आपकी मदद करेंगे।',
+    heroDesc: 'अगर आपको धमकी मिल रही है, ब्लैकमेल हो रहे हैं — आप अकेले नहीं हैं। 60 सेकंड में स्पष्ट योजना पाएं।',
+    sectionLabel: 'आपके साथ क्या हुआ?',
+    sit1Title: 'किसी के पास मेरी निजी फोटो/वीडियो है',
+    sit1Desc: 'contacts को भेजने की धमकी दे रहा है',
+    sit2Title: 'नकली निवेश में पैसे खो दिए',
+    sit2Desc: 'नकली ट्रेडिंग ऐप, WhatsApp ग्रुप',
+    sit3Title: '"पुलिस/CBI/TRAI" का कॉल आया',
+    sit3Desc: 'गिरफ्तारी की धमकी, पैसे मांग रहे हैं',
+    sit4Title: 'धोखाधड़ी UPI / बैंक ट्रांसफर',
+    sit4Desc: 'मेरी अनुमति के बिना पैसे कट गए',
+    emgTitle: 'राष्ट्रीय साइबर हेल्पलाइन',
+    emgSub: 'मुफ्त कॉल, 24 घंटे, पूरे भारत में',
+    crisisSubtitle: 'आपका 60-सेकंड एक्शन प्लान',
+    reportBoxTitle: 'साइबर हेल्पलाइन पर कॉल करें',
+    reportBoxDesc: 'मुफ्त, गोपनीय, 24/7। जितनी जल्दी कॉल करें, उतना बेहतर।',
+    reportBoxSub: 'राष्ट्रीय साइबर अपराध हेल्पलाइन · मुफ्त कॉल',
+    reportStep1: '<strong>cybercrime.gov.in पर शिकायत दर्ज करें</strong> — 5 मिनट लगते हैं। शिकायत नंबर सुरक्षित रखें।',
+    reportStep2: '<strong>स्क्रीनशॉट लें</strong> — हर धमकी, कॉल लॉग, भुगतान रसीद डिलीट करने से पहले।',
+    reportStep3: '<strong>किसी विश्वसनीय व्यक्ति को बताएं</strong> — परिवार या दोस्त। आप अकेले नहीं हैं।',
+    shareLabel: 'किसी और को अभी इसकी जरूरत हो सकती है',
+    nextBtn: 'अगला कदम →',
+    skipLink: 'हेल्पलाइन नंबर पर जाएं'
+  }
+};
+
+const crisisSteps = {
+  sextortion: {
+    label: { en: 'Private photo/video threat', ta: 'தனிப்பட்ட படம் மிரட்டல்', hi: 'निजी फोटो/वीडियो धमकी' },
+    steps: [
+      {
+        en: { heading: 'First — <span class="highlight">do NOT pay</span> them anything', body: 'We know it feels like paying will make it stop. It will not. Studies show 90% of victims who pay receive more demands within days. Paying confirms you will pay again.', doItems: ['Stay calm — this happens to many people', 'Block the sender immediately', 'Take screenshots of all messages'], dontItems: ['Do not pay any amount', 'Do not share more content', 'Do not reply or negotiate'] },
+        ta: { heading: 'முதலில் — <span class="highlight">பணம் கொடுக்காதீர்கள்</span>', body: 'பணம் கொடுத்தால் நிற்கும் என்று தோன்றும். நிற்காது. 90% பாதிக்கப்பட்டவர்கள் மீண்டும் மிரட்டப்படுகிறார்கள்.', doItems: ['அமைதியாக இருங்கள்', 'அனுப்பியவரை உடனடியாக block செய்யுங்கள்', 'அனைத்து செய்திகளின் ஸ்கிரீன்ஷாட் எடுங்கள்'], dontItems: ['எந்த தொகையும் செலுத்தாதீர்கள்', 'மேலும் உள்ளடக்கம் பகிராதீர்கள்', 'பதில் சொல்லாதீர்கள்'] },
+        hi: { heading: 'पहले — <span class="highlight">कुछ भी न दें</span>', body: 'ऐसा लगता है कि पैसे देने से रुकेगा। नहीं रुकेगा। 90% पीड़ितों से दोबारा मांग होती है।', doItems: ['शांत रहें — यह कई लोगों के साथ होता है', 'भेजने वाले को तुरंत block करें', 'सभी messages के screenshots लें'], dontItems: ['कोई भी राशि न दें', 'और content न भेजें', 'जवाब न दें'] }
+      },
+      {
+        en: { heading: 'Your photo <span class="highlight">cannot spread</span> if you act now', body: 'Platforms like WhatsApp, Instagram, Facebook have reporting tools that can remove content within hours. You have more power than you think right now.', doItems: ['Report the account on WhatsApp/Instagram', 'Ask a trusted person to help you report', 'Contact platform safety teams'], dontItems: ['Do not delete your own account', 'Do not warn the blackmailer you will report', 'Do not send money thinking it helps'] },
+        ta: { heading: 'இப்போது செயல்பட்டால் <span class="highlight">பரவாது</span>', body: 'WhatsApp, Instagram போன்ற தளங்களில் சில மணி நேரங்களில் content நீக்கலாம்.', doItems: ['WhatsApp/Instagram இல் account report செய்யுங்கள்', 'நம்பகமான நபர் உதவியுடன் report செய்யுங்கள்'], dontItems: ['உங்கள் account நீக்காதீர்கள்', 'மிரட்டுபவருக்கு report செய்வதாக சொல்லாதீர்கள்'] },
+        hi: { heading: 'अभी काम करें तो <span class="highlight">फैलेगा नहीं</span>', body: 'WhatsApp, Instagram जैसे platforms कुछ घंटों में content हटा सकते हैं।', doItems: ['WhatsApp/Instagram पर account report करें', 'किसी विश्वसनीय की मदद से report करें'], dontItems: ['अपना account delete न करें', 'blackmailer को report करने की बात न बताएं'] }
+      }
+    ]
+  },
+  investment: {
+    label: { en: 'Fake investment fraud', ta: 'போலி முதலீட்டு மோசடி', hi: 'नकली निवेश धोखाधड़ी' },
+    steps: [
+      {
+        en: { heading: '<span class="highlight">Stop all transfers</span> immediately', body: 'If money left your account in the last 24-48 hours, there is a real chance it can be recovered. Every minute matters. The 1930 helpline can freeze mule accounts.', doItems: ['Stop sending money immediately', 'Call your bank to freeze the transfer', 'Note the account numbers you sent to'], dontItems: ['Do not send "recovery fee" they ask for', 'Do not trust anyone who says they can recover money for a fee', 'Do not delete payment proofs'] },
+        ta: { heading: '<span class="highlight">உடனடியாக நிறுத்துங்கள்</span>', body: 'கடந்த 24-48 மணி நேரத்தில் பணம் சென்றிருந்தால், திரும்ப பெற வாய்ப்பு உள்ளது.', doItems: ['உடனடியாக பணம் அனுப்புவதை நிறுத்துங்கள்', 'வங்கியை அழைத்து பரிமாற்றத்தை நிறுத்துங்கள்'], dontItems: ['"மீட்பு கட்டணம்" கொடுக்காதீர்கள்', 'கட்டணம் கேட்பவர்களை நம்பாதீர்கள்'] },
+        hi: { heading: '<span class="highlight">तुरंत रोकें</span>', body: 'अगर पिछले 24-48 घंटों में पैसे गए हैं, तो वापस मिलने की संभावना है।', doItems: ['तुरंत पैसे भेजना बंद करें', 'बैंक को call करके transfer रोकें'], dontItems: ['"recovery fee" न दें', 'fee लेकर पैसे वापस दिलाने वालों पर विश्वास न करें'] }
+      }
+    ]
+  },
+  arrest: {
+    label: { en: 'Fake arrest call', ta: 'போலி கைது அழைப்பு', hi: 'नकली गिरफ्तारी कॉल' },
+    steps: [
+      {
+        en: { heading: 'This call is <span class="highlight">100% fake</span>. Hang up now.', body: 'Real police, CBI, TRAI, ED, RBI — NONE of them call you on WhatsApp or demand money over phone. This is called "digital arrest" fraud. It is entirely fake.', doItems: ['Hang up the call right now', 'Block the number', 'Tell a family member immediately'], dontItems: ['Do not pay any "bail" or "fine"', 'Do not stay on video call under their instruction', 'Do not share your Aadhaar or bank details'] },
+        ta: { heading: 'இந்த அழைப்பு <span class="highlight">100% போலி</span>. இப்போதே வையுங்கள்.', body: 'உண்மையான போலீஸ், CBI, TRAI — யாரும் WhatsApp இல் அழைத்து பணம் கேட்கமாட்டார்கள்.', doItems: ['இப்போதே அழைப்பை வையுங்கள்', 'எண்ணை block செய்யுங்கள்', 'குடும்பத்தினரிடம் சொல்லுங்கள்'], dontItems: ['"ஜாமீன்" அல்லது "அபராதம்" கொடுக்காதீர்கள்', 'Aadhaar அல்லது வங்கி தகவல் பகிராதீர்கள்'] },
+        hi: { heading: 'यह call <span class="highlight">100% नकली</span> है। अभी काटें।', body: 'असली पुलिस, CBI, TRAI — कोई भी WhatsApp पर call नहीं करता और पैसे नहीं मांगता।', doItems: ['अभी call काटें', 'number block करें', 'परिवार को तुरंत बताएं'], dontItems: ['"जमानत" या "जुर्माना" न दें', 'Aadhaar या bank details share न करें'] }
+      }
+    ]
+  },
+  upi: {
+    label: { en: 'UPI / Bank fraud', ta: 'UPI / வங்கி மோசடி', hi: 'UPI / बैंक धोखाधड़ी' },
+    steps: [
+      {
+        en: { heading: 'Call your bank <span class="highlight">in the next 5 minutes</span>', body: 'UPI fraud can be reversed if reported within a short window. Your bank has a fraud team specifically for this. Do not waste time on social media — call the bank first.', doItems: ['Call bank customer care immediately', 'Note the fraudulent transaction ID', 'Call 1930 after informing bank'], dontItems: ['Do not try to send a "reversal" payment', 'Do not share OTP to anyone claiming to reverse fraud', 'Do not delete SMS or payment records'] },
+        ta: { heading: 'அடுத்த <span class="highlight">5 நிமிடங்களில்</span> வங்கியை அழையுங்கள்', body: 'UPI மோசடியை விரைவில் தெரிவித்தால் திரும்ப பெறலாம்.', doItems: ['உடனடியாக வங்கி customer care அழையுங்கள்', 'மோசடி transaction ID குறிக்கவும்'], dontItems: ['OTP யாரிடமும் பகிராதீர்கள்', 'SMS அல்லது பரிமாற்ற பதிவுகளை நீக்காதீர்கள்'] },
+        hi: { heading: 'अगले <span class="highlight">5 मिनट में</span> बैंक call करें', body: 'जल्दी report करने पर UPI fraud reverse हो सकता है।', doItems: ['तुरंत bank customer care call करें', 'fraud transaction ID नोट करें'], dontItems: ['किसी को OTP share न करें', 'SMS या payment records delete न करें'] }
+      }
+    ]
+  }
+};
+
+let currentCrisis = null;
+let currentStep = 0;
+let totalSteps = 0;
+
+function selectLang(l) {
+  lang.current = l;
+  applyLang();
+  goTo('screen-home');
+}
+
+function applyLang() {
+  const c = content[lang.current];
+  const L = lang.current;
+  document.getElementById('lang-label').textContent = c.langLabel;
+  document.getElementById('hero-tag').textContent = c.heroTag;
+  document.getElementById('hero-title').innerHTML = c.heroTitle;
+  document.getElementById('hero-desc').textContent = c.heroDesc;
+  document.getElementById('section-label').textContent = c.sectionLabel;
+  document.getElementById('sit1-title').textContent = c.sit1Title;
+  document.getElementById('sit1-desc').textContent = c.sit1Desc;
+  document.getElementById('sit2-title').textContent = c.sit2Title;
+  document.getElementById('sit2-desc').textContent = c.sit2Desc;
+  document.getElementById('sit3-title').textContent = c.sit3Title;
+  document.getElementById('sit3-desc').textContent = c.sit3Desc;
+  document.getElementById('sit4-title').textContent = c.sit4Title;
+  document.getElementById('sit4-desc').textContent = c.sit4Desc;
+  document.getElementById('emg-title').textContent = c.emgTitle;
+  document.getElementById('emg-sub').textContent = c.emgSub;
+  document.getElementById('report-box-title').textContent = c.reportBoxTitle;
+  document.getElementById('report-box-desc').textContent = c.reportBoxDesc;
+  document.getElementById('report-box-sub').textContent = c.reportBoxSub;
+  document.getElementById('report-step1').innerHTML = c.reportStep1;
+  document.getElementById('report-step2').innerHTML = c.reportStep2;
+  document.getElementById('report-step3').innerHTML = c.reportStep3;
+  document.getElementById('share-label').textContent = c.shareLabel;
+}
+
+function goTo(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+}
+
+function startCrisis(type) {
+  currentCrisis = type;
+  currentStep = 0;
+  const crisis = crisisSteps[type];
+  totalSteps = crisis.steps.length;
+  document.getElementById('crisis-label').textContent = crisis.label[lang.current];
+  document.getElementById('crisis-subtitle').textContent = content[lang.current].crisisSubtitle;
+  document.getElementById('next-btn').textContent = content[lang.current].nextBtn;
+  document.getElementById('skip-link').textContent = content[lang.current].skipLink;
+  renderStep();
+  goTo('screen-crisis');
+}
+
+function renderStep() {
+  const crisis = crisisSteps[currentCrisis];
+  const step = crisis.steps[currentStep];
+  const L = lang.current;
+  const s = step[L] || step['en'];
+
+  const dots = document.getElementById('step-dots');
+  dots.innerHTML = '';
+  for (let i = 0; i < totalSteps; i++) {
+    const d = document.createElement('div');
+    d.className = 'step-dot' + (i < currentStep ? ' done' : i === currentStep ? ' active' : '');
+    dots.appendChild(d);
+  }
+
+  const doItems = s.doItems.map(i => `<div class="box-item">✓ ${i}</div>`).join('');
+  const dontItems = s.dontItems.map(i => `<div class="box-item">✗ ${i}</div>`).join('');
+
+  document.getElementById('step-content').innerHTML = `
+    <div class="step-num">Step ${currentStep + 1} of ${totalSteps}</div>
+    <div class="step-heading">${s.heading}</div>
+    <div class="step-body">${s.body}</div>
+    <div class="do-dont">
+      <div class="do-box"><div class="box-label">Do this</div>${doItems}</div>
+      <div class="dont-box"><div class="box-label">Not this</div>${dontItems}</div>
+    </div>
+  `;
+
+  const isLast = currentStep === totalSteps - 1;
+  document.getElementById('next-btn').textContent = isLast ? 'See what to do next →' : content[lang.current].nextBtn;
+}
+
+function nextStep() {
+  if (currentStep < totalSteps - 1) {
+    currentStep++;
+    renderStep();
+  } else {
+    skipToReport();
+  }
+}
+
+function skipToReport() {
+  const crisis = crisisSteps[currentCrisis];
+  document.getElementById('report-crisis-label').textContent = crisis.label[lang.current];
+  document.getElementById('report-title-text').textContent = content[lang.current].reportBoxTitle;
+  goTo('screen-report');
+}
+
+function shareApp() {
+  if (navigator.share) {
+    navigator.share({ title: 'SafeStep', text: 'Free help if you are a cybercrime victim in India', url: 'https://safestep.in' });
+  } else {
+    alert('Share this link: safestep.in\nOr forward this to anyone who needs help.');
+  }
+}
+</script>
